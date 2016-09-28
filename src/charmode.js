@@ -91,6 +91,20 @@ function share_link() {
     alert(loc)
 }
 
+function create_prg() {
+    var c64_program = window.atob('AQgMCAoAniAyMDYyAAAAogC9LwidAAS9LwmdAAW9LwqdAAa9LwudAAfo0OUgz/9g')
+    
+    for (var y = 0; y < 25; y++) {
+        for (var x = 0; x < 40; x++) {
+            c64_program += String.fromCharCode(screen_content[x][y])
+        }
+    }
+
+    alert(window.btoa(c64_program))
+}
+
+/* -- */
+
 var screen_content = []
 
 function main() {
@@ -107,6 +121,7 @@ function main() {
     }))
 
     document.write('<br><a class="action" href="javascript:share_link()">Get share link</a>')
+    document.write('<br><a class="action" href="javascript:create_prg()">Create PRG</a>')
     document.write("</td><td class='spacer'> </td><td>Character palette:<br>")
 
     document.write(create_table("palette", palette_size.w, palette_size.h, function(x, y) {
