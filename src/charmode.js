@@ -73,19 +73,41 @@ function tile_on_down(el) { tile_do_cb(el, 'down') }
 function tile_on_move(el) { tile_do_cb(el, 'move') }
 function tile_on_up(el)   { tile_do_cb(el, 'up')   }
 
+function screen_to_b64(screen_content) {
+    var data = []
+
+    for (var y = 0; y < 25; y++) {
+        for (var x = 0; x < 40; x++) {
+            data += String.fromCharCode(screen_content[x][y])
+        }
+    }
+
+    return window.btoa(data)
+}
+
+function share_link() {
+    var loc = location.href.replace(location.hash,"")
+    loc = loc + '#' + screen_to_b64(screen_content)
+    alert(loc)
+}
+
+var screen_content = []
+
 function main() {
     var char_size =    { w:  8, h: 8 }
     var palette_size = { w: 16, h: (32 / 2) }
 
     /* Creating elements */
 
-    document.write("<table><tr><td>")
+    document.write("<h1>Character Mode</h1>")
+    document.write("<table><tr><td>Screen area:")
 
     document.write(create_table("screen", 40, 25, function(x, y) {
         return create_table('screen-' + x + '-' + y, char_size.w, char_size.h)
     }))
 
-    document.write("</td><td class='spacer'> </td><td>")
+    document.write('<br><a class="action" href="javascript:share_link()">Get share link</a>')
+    document.write("</td><td class='spacer'> </td><td>Character palette:<br>")
 
     document.write(create_table("palette", palette_size.w, palette_size.h, function(x, y) {
         return create_table('palette-' + x + '-' + y, char_size.w, char_size.h)
@@ -97,13 +119,29 @@ function main() {
 
     /* Initialization */
 
-    var screen_content = []
     for (var x = 0; x < 40; x++) {
         screen_content[x] = []
         for (var y = 0; y < 25; y++) {
             screen_content[x][y] = 0
         }
     }
+
+    /* Get content from url, hackishly */
+
+    if (location.hash) {
+        var str = window.atob(location.hash.substring(1))
+
+        if (str) {        
+            for (var i = 0; i < str.length; i++) {
+                var x = i % 40
+                var y = Math.floor(i / 40)
+
+                screen_content[x][y] = str.charCodeAt(i)
+            }
+        }
+    }
+
+    /* Fill in the character palette */
 
     var c = 0
     for (var y = 0; y < palette_size.h; y++) {
